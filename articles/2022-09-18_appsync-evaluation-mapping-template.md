@@ -6,7 +6,6 @@ topics: [graphql, test, aws]
 published: true
 ---
 
-こんにちは！エンジニアの giri です．
 こちらはAppSync・VTL周りについて，私なりの理解や開発方針をまとめた記事となっております〜．
 
 元々は「Evaluation Mapping Template を使ってみた」というテンションの記事を書く予定でしたが，まとめるのが下手すぎて少し長めの記事となってしまいました．笑
