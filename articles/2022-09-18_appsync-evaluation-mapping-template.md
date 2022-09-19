@@ -6,9 +6,10 @@ topics: [graphql, test, aws]
 published: false
 ---
 
-この記事はAppSyncのVTLに関わる勉強と，私なりの理解をまとめた記事となっています．
+こんにちは！エンジニアの giri です．
+こちらはAppSync・VTL周りについて，私なりの理解や開発方針をまとめた記事となっております〜．
 
-元々は「EvaluationMappingTemplate を使ってみた」というテンションの記事を書く予定でしたが，まとめるのが下手すぎて少し長めの記事となってしまいました．笑
+元々は「Evaluation Mapping Template を使ってみた」というテンションの記事を書く予定でしたが，まとめるのが下手すぎて少し長めの記事となってしまいました．笑
 
 特に最初から読む必要はないと思いますので，Evaluation Mapping Template を見にきてくれた方は右の目次から「EvaluationMappingTemplate が使えるようになってました」に飛んじゃってください．
 
@@ -16,8 +17,7 @@ published: false
 
 # AppSync と VTL
 
-AppSync，使ってますか？
-使ってみたみたことがある・現在興味を持っているという方も多いのではないでしょうか．
+AppSyncを使ってたことがある・現在興味を持っているという方も多いのではないでしょうか．
 
 https://aws.amazon.com/jp/appsync/#:~:text=AWS%20AppSync%20%E3%81%AF%E3%80%81%E6%9C%80%E6%96%B0%E3%81%AE,Sub%20API%20%E3%81%AE%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%E3%81%A7%E3%81%99%E3%80%82
 
