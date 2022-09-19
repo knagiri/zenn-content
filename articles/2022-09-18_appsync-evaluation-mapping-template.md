@@ -3,7 +3,7 @@ title: '[入門] AppSyncとVTL開発'
 emoji: '📗'
 type: 'tech' # tech: 技術記事 / idea: アイデア
 topics: [graphql, test, aws]
-published: false
+published: true
 ---
 
 こんにちは！エンジニアの giri です．
