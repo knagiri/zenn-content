@@ -2,8 +2,8 @@
 title: 'リモートアクセスVPNを構築したいのでWireGuardを調べる'
 emoji: '🐉'
 type: 'tech' # tech: 技術記事 / idea: アイデア
-topics: ['wireguard']
-published: false
+topics: ['wireguard', '初心者']
+published: true
 ---
 
 ## はじめに
