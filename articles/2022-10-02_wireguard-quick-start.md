@@ -8,7 +8,7 @@ published: true
 
 ## はじめに
 
-自宅内のデスクトップに外部ネットワークから接続するために リモートアクセス VPN を構築したい。WireGuard が便利らしいので使ってみます。
+自宅内のデスクトップに外部ネットワークから接続するためにリモートアクセス VPN を構築したい。WireGuard が便利らしいので使ってみます。
 
 :::message
 インフラ・セキュリティ等に関して初学者です。
@@ -33,13 +33,13 @@ https://www.wireguard.com/quickstart/
 
 #### ざっくり整理
 
-画面左右の Peer A,B でやっていることは概ね同じみたいです。
+画面左右の Peer A, B でやっていることは概ね同じみたいです。
 
 Peer A に注目すると、
 
 1. 秘密鍵（及び公開鍵）を作成
 
-2. 「 WireGuard 用の Network Interface = `wg0` 」を作成する
+2. 「WireGuard 用の Network Interface = `wg0`」を作成する
 
 3. `wg0` に VPN で利用する IP アドレス(`10.0.0.1/24`)を指定する
 
@@ -55,16 +55,16 @@ Peer A に注目すると、
 
 ![](/images/wireguard-quickstart.jpg)
 
-元々の ネットワーク(`192.168.1.0/24`)の代わりに、WireGuard より構築した ネットワーク(`10.0.0.0/24`)を利用して通信をしているように見えます。
+元々のネットワーク(`192.168.1.0/24`)の代わりに、WireGuard より構築したネットワーク(`10.0.0.0/24`)を利用して通信をしているように見えます。
 
 ## WireGuard の理解
 
-WireGuard を利用することで、Peer A,B の属するネットワーク内に、独立したネットワークが作れるようです。
+WireGuard を利用することで、Peer A, B の属するネットワーク内に、独立したネットワークが作れるようです。
 
-Quick Start では Peer A の設定に Peer B の実際の IP アドレスを、Peer B の設定に Peer A の実際の IP アドレスを指定していましたが、どうやら片方の方向、例えば Peer A -> Peer B さえわかっていれば、WireGuard はいい感じに Peer B -> Peer A も実現してくれるみたいです。
+QuickStart では Peer A の設定に Peer B の実際の IP アドレスを、Peer B の設定に Peer A の実際の IP アドレスを指定していましたが、どうやら片方の方向、例えば Peer A -> Peer B さえわかっていれば、WireGuard はいい感じに Peer B -> Peer A も実現してくれるみたいです。
 https://www.wireguard.com/#built-in-roaming
 
-ただし NAT 等を利用している場合は特別な設定が必要とのこと。
+ただしNAT等を利用している場合は特別な設定が必要とのことご注意ください。
 https://www.wireguard.com/quickstart/#nat-and-firewall-traversal-persistence
 
 まとめると、WireGuard とは
@@ -81,13 +81,13 @@ WireGuard を利用すれば Peer A -> Peer B を Peer A <-> Peer B にするこ
 
 ![](/images/wireguard-remote-access-vpn.jpg)
 
-単純な手を使えば Peer A -> Peer C -> Peer B と SSH を繋げて行けばよいでしょうし、`iptables` などをいじれば Peer A (-> Peer C) -> Peer B も実現できそうです。
+単純な手を使えば Peer A -> Peer C -> Peer B と SSH を繋げて行けばよいでしょうし、`iptables`などをいじれば Peer A (-> Peer C) -> Peer B も実現できそうです。
 
 ## おわりに
 
 WireGuard の QuickStart から、WireGuard の役割を整理しました。
 
-VPN という言葉の定義が私の中で曖昧だったために無駄に混乱しましたが、
+VPN という言葉の定義が私の中で曖昧だったですが、
 **WireGuard を利用すればモダンな VPN の構築ができ、これを応用すればリモートアクセス VPN を構築できる**
 ということでよさそうです。
 
