@@ -10,6 +10,10 @@
   "author": "gili-Katagiri <65004703+gili-Katagiri@users.noreply.github.com>",
   "license": "MIT",
   "devDependencies": {
-    "zenn-cli": "^0.1.117"
+    "zenn-cli": "^0.1.159"
+  },
+  "volta": {
+    "node": "24.1.0",
+    "npm": "11.4.1"
   }
 }
