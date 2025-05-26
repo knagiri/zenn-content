@@ -2,7 +2,7 @@
 title: "（仮）鉄ナビ検収のアーキテクチャを紹介します！"
 emoji: "🎃"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: []
+topics: ["typescript"]
 published: false
 publication_name: "eversteel_tech"
 ---

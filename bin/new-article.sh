@@ -13,13 +13,13 @@ function main() {
     local _prefix=$(get_prefix)
 
     # Ex) "2022-12-15_pman-nasub-moyac"
-    yarn zenn new:article --slug "${_prefix}_${article_name}"
+    yarn zenn new:article --slug "${_prefix}-${article_name}"
 
     return 0
 }
 
 function get_prefix() {
-    date +%Y-%m-%d
+    date +%Y%m%d
     return 0
 }
 
