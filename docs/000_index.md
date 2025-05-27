@@ -16,8 +16,9 @@
 - file_path: ./001_author.md
 ```
 
-`refer_for` を見て、参照が必要と判断された場合は作業前に読み込みます。
-また、記事の内容を記載する前には必ず必要なドキュメントがないか確認し、必要であると判断できるドキュメントは必ず読み込みます。
+`refer_for` を見て、必要と判断された場合は作業前に読み込みます。
+また、作業を開始する前に必ず読み込むべきドキュメントを確認し、必要であると判断されるドキュメントは必ず読み込みます。
+
 このファイルが `/path/to/docs/000_index.md` であるとき、`file_path: ./001_author.md` と記載されいる場合は `/path/to/docs/001_author.md` にファイルが存在します。
 
 ## List
@@ -29,22 +30,22 @@
 
 ### 基本方針
 
-- refer_for: 記事執筆開始時に必ず参照する。
+- refer_for: 作業開始時に必ず参照する。
 - file_path: ./010_basic_principles.md
 
 ### 記事執筆ワークフロー
 
-- refer_for: 記事執筆開始時に必ず参照する。
+- refer_for: 作業開始時に必ず参照する。
 - file_path: ./011_writing_workflow.md
 
 ### 各ステップでの詳細ルール
 
-- refer_for: 記事執筆開始時に必ず参照する。
+- refer_for: 作業開始時に必ず参照する。
 - file_path: ./012_step_by_step_rules.md
 
 ### 記録ファイル管理
 
-- refer_for: 記事執筆開始時に必ず参照する。
+- refer_for: 作業開始時に必ず参照する。
 - file_path: ./013_record_management.md
 
 ### 承認とcommitプロセス
