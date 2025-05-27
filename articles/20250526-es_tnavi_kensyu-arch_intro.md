@@ -204,3 +204,134 @@ const result = await userProcessingWorkflow.run(input, context);
 - エラーハンドリングの漏れが型レベルで検出される
 
 関数型プログラミングは学習コストがありますが、複雑なドメインロジックを扱う鉄ナビ検収において、コードの品質と開発効率の向上に大きく貢献しています。
+
+## アーキテクチャの詳細
+
+前章で紹介した技術要素を、実際のシステムアーキテクチャの中でどのように活用しているかを説明します。
+
+### システム構成の概要
+
+鉄ナビ検収のバックエンドは、以下の4つの主要コンポーネントで構成されています：
+
+![アーキテクチャ概要図](../images/es-sw-arch.png)
+
+**cloud_sms**
+工場ごとに異なる基幹システムとの連携をサポートします。異なるJSON Schemaを用いた変換ロジックを担い、様々な基幹システムの実装に対応できる柔軟性を提供しています。
+
+**assessment_manager**
+基幹システムからの検収情報を処理します。検収データの受信、バリデーション、正規化を行い、後続の処理に必要な形式に整えます。
+
+**capture_session**
+検収情報とユーザからの操作を元に、撮影ループを処理します。カメラとの連携やフレームの管理、撮影タイミングの制御を担当します。
+
+**ai_assessment**
+撮影ループで解析対象と判定されたフレームのAI解析を実施します。AI解析システムとの連携から結果の処理まで、一連のAI処理フローを管理します。
+
+なお、以前はCloud側に存在していたNCSやFrameClassificationといった機能は、現在工場ローカルでの処理に移行しており、レスポンス性能の向上を図っています。
+
+### クリーンアーキテクチャの採用
+
+鉄ナビ検収では、伝統的なクリーンアーキテクチャを参考にした4層構造を採用しています。
+
+**現在のディレクトリ構造**
+```
+src/
+  ai_assessment/
+    application/      # UseCase層
+    domain/          # Entity・ビジネスルール層
+    infrastructure/  # 外部システム連携層
+    presentation/    # API・Controller層
+  assessment_manager/
+    application/
+    domain/
+    infrastructure/
+    presentation/
+  ...
+```
+
+各層の責任は以下のように分離されています：
+
+- **Domain層**: ビジネスルールとドメインエンティティ
+- **Application層**: ユースケースの実行とドメインサービスの協調
+- **Infrastructure層**: データベースや外部APIとの連携
+- **Presentation層**: HTTPリクエスト/レスポンスの処理
+
+この構造により、ビジネスロジックを外部の技術的関心事から分離し、テストしやすく保守性の高い設計を実現しています。
+
+### ドメインモデルの型安全性
+
+**Branded-Typeによる意味のある型定義**
+
+ドメイン層では、Branded-Typeを活用して意味を持った型を定義しています：
+
+```typescript
+export type AssessmentId = Branded<string, 'AssessmentId'>;
+
+export const parseAssessmentId = (
+    value: string,
+): Result<AssessmentId, DomainError> =>
+    typeof value === 'string' && value.length > 0
+        ? ok(AssessmentId(value))
+        : err(genUnknownError('AssessmentId is string and not empty'));
+```
+
+**安全なエンティティ作成**
+
+エンティティの作成時には、複数のバリデーションを組み合わせて安全にオブジェクトを構築しています：
+
+```typescript
+export const parseAssessmentEntity = (
+    props: AssessmentEntityParserProps,
+): Result<AssessmentEntity, DomainError> =>
+    Result.combine([
+        parseAssessmentId(props.id),
+        // 他のプロパティのパーサー
+    ]).map(([id, ...]) => ({ id, ... }));
+```
+
+このアプローチにより、ドメインオブジェクトの整合性を型レベルで保証し、実行時エラーを大幅に削減できています。
+
+### フレームワークとビジネスロジックの分離
+
+Nest.jsのフレームワーク機能（依存性注入、デコレータなど）を活用しながらも、コアなビジネスロジックはフレームワークに依存しない形で実装しています。
+
+```typescript
+@Injectable()
+export class StartAiAssessmentUsecase {
+    constructor(
+        @Inject(AI_ASSESSMENT_REPOSITORY)
+        private readonly repository: AiAssessmentRepository,
+        // 他の依存関係
+    ) {}
+
+    exec(args: Args) {
+        // フレームワークから独立したビジネスロジックを呼び出し
+        return businessLogic(this.repository)(args);
+    }
+}
+```
+
+この設計により、フレームワークの恩恵を受けながらも、ビジネスロジックのテスタビリティと再利用性を確保しています。
+
+### 将来への展望
+
+現在、チーム内でディレクトリ構造の改善について議論を重ねています：
+
+```
+src/
+  presentation/     # 統合されたAPI層
+    auth
+    control
+    admin
+    cloud_sms
+  domain/          # ドメイン別の分離
+    ai_assessment/
+      application/
+      domain/
+      infrastructure/
+    assessment_manager/
+```
+
+この構造により、プレゼンテーション層を統合し、各ドメインのビジネスロジックをより明確に分離することを目指しています。
+
+複雑なドメインを扱う鉄ナビ検収において、クリーンアーキテクチャの原則と関数型プログラミングの要素を組み合わせることで、保守性と拡張性を両立したシステムを構築できています。特に、型安全性を重視したアプローチにより、チーム開発での品質向上に大きく貢献しています。
