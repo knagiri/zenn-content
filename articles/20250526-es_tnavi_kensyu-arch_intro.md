@@ -127,75 +127,6 @@ async function processImage(imageId: ImageId): Promise<Result<AnalysisResult, Pr
 - エラーの種類が明確になり、適切な処理を行いやすい
 - 非同期処理のチェインが読みやすくなる
 
-### ネスト構造の改善アプローチ
-
-neverthrowの`ResultAsync`チェインでは、処理の途中結果を後続の処理で再利用したい場合に深いネストが発生し、可読性とメンテナンス性が低下していました。
-
-**注意**: 以下のコード例は、記事の理解を助けるために実際の実装を大幅に簡略化したものです。エラーハンドリング、型定義の詳細、内部実装などは省略しています。
-
-**発生していた課題**
-```typescript
-// 深いネスト構造の問題
-// validatedを後続の処理でも使いたいが、ネストが深くなってしまう
-return parseInput(input)
-  .andThen(validated => 
-    fetchUser(validated.userId)
-      .andThen(user =>
-        processUser(user, validated.options)  // validatedを再利用したい
-          .andThen(result =>
-            validateResult(result, validated.rules)  // validatedを再利用したい
-              .andThen(finalResult => ...)
-          )
-      )
-  );
-```
-
-**フラット化への取り組み**
-
-この課題を解決するため、独自の「Workflow」DSLを実装し、処理をフラットに記述できるような仕組みを検討しています。
-
-**実装の概要**
-```typescript
-export type WorkflowTask<I extends TaskInput, O extends TaskOutput> = (
-    args: I,
-    context: Context,
-) => ResultAsync<O, Error>;
-
-export class Workflow<I extends TaskInput, O extends TaskOutput> {
-    public static init<I extends TaskInput>() {
-        return new Workflow<I, I>(okAsync);
-    }
-
-    public chain = <WO extends TaskOutput>(
-        wf: WorkflowTask<O, WO>,
-    ): Workflow<I, O & WO> => {
-        // 実装詳細...
-    };
-}
-```
-
-**使用例**
-```typescript
-// フラットで読みやすい記述
-const userProcessingWorkflow = Workflow
-  .init<Input>()
-  .chain(parseInput)
-  .chain(fetchUser)
-  .chain(processUser)
-  .chain(validateResult);
-
-const result = await userProcessingWorkflow.run(input, context);
-```
-
-**現在の活用場面**
-- APIエンドポイントの処理フロー
-- データ変換パイプライン
-- 複数段階のバリデーション処理
-
-**現在の状況と今後の方向性**
-
-この実装は現在も実験的な段階にあり、型の複雑性やデバッグの困難さなどの課題があります。限定的な場面（小規模なAPIエンドポイントの処理フローなど）で試験的に活用しながら、エンジニアメンバー間で実用性と学習コストのバランスを考慮した最適な落としどころを探っている段階です。
-
 ### 開発体験への影響
 
 これらの関数型的アプローチを試すことで、以下のような体験を得ています：
@@ -212,7 +143,7 @@ const result = await userProcessingWorkflow.run(input, context);
 - 型により契約が明確になり、インターフェースが安定
 - エラーハンドリングの漏れが型レベルで検出される
 
-関数型プログラミングには学習コストがありますが、複雑なドメインロジックを扱う鉄ナビ検収において、一定の効果を感じています。
+関数型プログラミングには学習コストがありますが、複雑なドメインロジックを扱う鉄ナビ検収において、一定の効果を感じています。より複雑な処理フローの課題と解決策については、今後の技術記事で詳しく紹介予定です。
 
 ## アーキテクチャの詳細
 
@@ -279,17 +210,17 @@ declare const __brand: unique symbol;
 type Brand<B> = { readonly [__brand]: B };
 export type Branded<T, B> = T & Brand<B>;
 
-// 検収IDの型定義
-export type AssessmentId = Branded<string, 'AssessmentId'>;
-const AssessmentId = (value: string): AssessmentId => value as AssessmentId;
+// ユーザーIDの型定義
+export type UserId = Branded<string, 'UserId'>;
+const UserId = (value: string): UserId => value as UserId;
 
 // 安全なパーサー関数
-export const parseAssessmentId = (
+export const parseUserId = (
     value: string,
-): Result<AssessmentId, Error> =>
+): Result<UserId, Error> =>
     typeof value === 'string' && value.length > 0
-        ? ok(AssessmentId(value))
-        : err(new Error('AssessmentId is string and not empty'));
+        ? ok(UserId(value))
+        : err(new Error('UserId is string and not empty'));
 ```
 
 **安全なエンティティ作成**
@@ -297,11 +228,11 @@ export const parseAssessmentId = (
 エンティティの作成時には、複数のバリデーションを組み合わせて安全にオブジェクトを構築しています：
 
 ```typescript
-export const parseAssessmentEntity = (
-    props: AssessmentEntityParserProps,
-): Result<AssessmentEntity, Error> =>
+export const parseUserEntity = (
+    props: UserEntityParserProps,
+): Result<UserEntity, Error> =>
     Result.combine([
-        parseAssessmentId(props.id),
+        parseUserId(props.id),
         // 他のプロパティのパーサー
     ]).map(([id, /* ...otherProps */]) => ({ 
         id, 
@@ -317,10 +248,10 @@ Nest.jsのフレームワーク機能（依存性注入、デコレータなど�
 
 ```typescript
 @Injectable()
-export class StartAiAssessmentUsecase {
+export class CreateUserUsecase {
     constructor(
-        @Inject(AI_ASSESSMENT_REPOSITORY)
-        private readonly repository: AiAssessmentRepository,
+        @Inject(USER_REPOSITORY)
+        private readonly repository: UserRepository,
         // 他の依存関係
     ) {}
 
