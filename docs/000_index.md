@@ -28,6 +28,11 @@
 - refer_for: 自己紹介の時に参照する。
 - file_path: ./001_author.md
 
+### Zenn Markdown記法
+
+- refer_for: Zenn記事執筆時に必ず参照する。最新の記法情報は公式ガイドを確認する。
+- file_path: ./002_zenn_markdown.md
+
 ### 基本方針
 
 - refer_for: 作業開始時に必ず参照する。
