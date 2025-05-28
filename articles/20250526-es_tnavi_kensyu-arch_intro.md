@@ -13,7 +13,7 @@ publication_name: "eversteel_tech"
 
 弊社では鉄スクラップの画像解析を行う「鉄ナビ検収」というプロダクトを開発しており、鉄リサイクルの効率化・品質向上を目指しています。東大発のスタートアップとして、より良いソリューションを追求しながらプロダクト開発を進めています。
 
-この記事では、鉄ナビ検収のバックエンドアーキテクチャについて紹介します。特に以下の内容について解説します：
+この記事では、鉄ナビ検収のバックエンドアーキテクチャについて紹介します。特に以下の内容について紹介します：
 
 - 鉄ナビ検収というプロダクトの概要と技術的背景
 - TypeScript + Nest.jsを選択した理由と背景
@@ -129,20 +129,21 @@ async function processImage(imageId: ImageId): Promise<Result<AnalysisResult, Pr
 
 ### ネスト構造の改善アプローチ
 
-neverthrowの`ResultAsync`チェインでは深いネストが発生し、可読性とメンテナンス性が低下していました。
+neverthrowの`ResultAsync`チェインでは、処理の途中結果を後続の処理で再利用したい場合に深いネストが発生し、可読性とメンテナンス性が低下していました。
 
 **注意**: 以下のコード例は、記事の理解を助けるために実際の実装を大幅に簡略化したものです。エラーハンドリング、型定義の詳細、内部実装などは省略しています。
 
 **発生していた課題**
 ```typescript
 // 深いネスト構造の問題
+// validatedを後続の処理でも使いたいが、ネストが深くなってしまう
 return parseInput(input)
   .andThen(validated => 
-    fetchUser(validated)
+    fetchUser(validated.userId)
       .andThen(user =>
-        processUser(user)
+        processUser(user, validated.options)  // validatedを再利用したい
           .andThen(result =>
-            validateResult(result)
+            validateResult(result, validated.rules)  // validatedを再利用したい
               .andThen(finalResult => ...)
           )
       )
@@ -221,7 +222,7 @@ const result = await userProcessingWorkflow.run(input, context);
 
 鉄ナビ検収のバックエンドは、以下の4つの主要コンポーネントで構成されています：
 
-![アーキテクチャ概要図](../images/es-sw-arch.png)
+![アーキテクチャ概要図](/images/es-sw-arch.png)
 
 **cloud_sms**
 工場ごとに異なる基幹システムとの連携をサポートします。異なるJSON Schemaを用いた変換ロジックを担い、様々な基幹システムの実装に対応できる柔軟性を提供しています。
