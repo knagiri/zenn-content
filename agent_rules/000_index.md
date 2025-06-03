@@ -19,7 +19,7 @@
 `refer_for` を見て、必要と判断された場合は作業前に読み込みます。
 また、作業を開始する前に必ず読み込むべきドキュメントを確認し、必要であると判断されるドキュメントは必ず読み込みます。
 
-このファイルが `/path/to/docs/000_index.md` であるとき、`file_path: ./001_author.md` と記載されいる場合は `/path/to/docs/001_author.md` にファイルが存在します。
+このファイルが `/path/to/agent_rules/000_index.md` であるとき、`file_path: ./001_author.md` と記載されいる場合は `/path/to/agent_rules/001_author.md` にファイルが存在します。
 
 ## List
 
